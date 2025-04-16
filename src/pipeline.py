@@ -21,6 +21,7 @@ def redact(
 def convert_to_datetime(
     row: dict,
 ) -> dict:
+    """Convert separate date and time columns into a single timestamp column."""
     row['event_timestamp'] = f"{row['event_date']} {row['event_time']}"
     del row['event_date']
     del row['event_time']
