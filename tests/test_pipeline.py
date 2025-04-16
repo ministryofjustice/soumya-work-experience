@@ -1,6 +1,6 @@
 """Tests for the pipeline module."""
 from src.pipeline import (
-    redact,
+    redact, convert_to_datetime ,
 )
 
 
@@ -52,3 +52,4 @@ class TestRedact:
         }
 
         assert actual == expected
+
