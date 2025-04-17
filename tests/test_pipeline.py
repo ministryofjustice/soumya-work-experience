@@ -19,7 +19,7 @@ class TestRedact:
 
         actual = redact(
             row=row,
-            columns=columns_to_redact
+            columns=columns_to_redact,
         )
 
         expected = {
@@ -42,7 +42,7 @@ class TestRedact:
 
         actual = redact(
             row=row,
-            columns=columns_to_redact
+            columns=columns_to_redact,
         )
 
         expected = {

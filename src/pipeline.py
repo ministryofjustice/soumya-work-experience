@@ -1,7 +1,8 @@
 """Loading both tables of data into duckDB with custom transformers.
 
 Here we use custom transformers to modify existing data, combine fields
-and remove columns."""
+and remove columns.
+"""
 from pathlib import Path
 
 import dlt
@@ -14,35 +15,49 @@ def redact(
 ) -> dict:
     """Redact data in the specified columns from the row."""
     for column in columns:
-        row[column] = '***'
+        row[column] = "***"
     return row
 
 
 def convert_to_datetime(
     row: dict,
 ) -> dict:
-    row['event_timestamp'] = f"{row['event_date']} {row['event_time']}"
-    del row['event_date']
-    del row['event_time']
+    """Create a datetime string from separate date and times.
+
+    Combines event_date and event_time fields into a single event_timestamp value
+    before dropping the original fields.
+    """
+    row["event_timestamp"] = f"{row['event_date']} {row['event_time']}"
+    del row["event_date"]
+    del row["event_time"]
     return row
 
 
 def load_data(pipeline_name: str) -> str:
+    """Run dlt pipeline to load data."""
     current_directory = Path().cwd()
 
     files_users = filesystem(
         bucket_url=f"file://{current_directory}/data",
         file_glob="users_*.jsonl",
-    ) 
-    columns_to_redact = ['name', 'alias', 'email', 'phone_number', 'address']
-    reader_users = (files_users | read_jsonl().add_map(lambda row: redact(row, columns_to_redact))).with_name("users")
+    )
+    columns_to_redact = ["name", "alias", "email", "phone_number", "address"]
+    reader_users = (
+        (files_users | read_jsonl()\
+        .add_map(lambda row: redact(row, columns_to_redact)))\
+        .with_name("users")
+    )
 
     files_events = filesystem(
         bucket_url=f"file://{current_directory}/data",
         file_glob="events_*.jsonl",
-    ) 
-    
-    reader_events = (files_events | read_jsonl()).add_map(lambda row: convert_to_datetime(row)).with_name("events")
+    )
+
+    reader_events = (
+        (files_events | read_jsonl())\
+        .add_map(lambda row: convert_to_datetime(row))\
+        .with_name("events")
+    )
 
     pipeline = dlt.pipeline(
         pipeline_name=pipeline_name,
@@ -53,7 +68,7 @@ def load_data(pipeline_name: str) -> str:
 
     load_info = pipeline.run([reader_users, reader_events])
 
-    print(load_info)
+    print(load_info)  # noqa: T201
 
     return load_info.dataset_name
 
@@ -61,24 +76,24 @@ def load_data(pipeline_name: str) -> str:
 if __name__ == "__main__":
     import duckdb
 
-    pipeline_name = 'example_6'
+    pipeline_name = "example_6"
     database = load_data(pipeline_name)
     db_file = f"{pipeline_name}.duckdb"
 
     print("""
     We no longer have a seperate users__alias table
-    """)
-    with duckdb.connect(f'{db_file}') as conn:
+    """)  # noqa: T201
+    with duckdb.connect(f"{db_file}") as conn:
         print(conn.sql(f"""
-        SELECT table_schema, table_name 
+        SELECT table_schema, table_name
         FROM information_schema.tables
         WHERE table_schema = '{database}';
-        """))
+        """))  # noqa: T201
 
     print("""
     We see that the users data looks just the same as example 1 but heavily redacted.
-    """)
-    with duckdb.connect(f'{db_file}') as conn:
+    """)  # noqa: T201
+    with duckdb.connect(f"{db_file}") as conn:
         query = conn.sql(f"""
         select *
         from {database}.users
@@ -88,8 +103,8 @@ if __name__ == "__main__":
 
     print("""
     And the events date and time are now combined into one field.
-    """)
-    with duckdb.connect(f'{db_file}') as conn:
+    """)  # noqa: T201
+    with duckdb.connect(f"{db_file}") as conn:
         query = conn.sql(f"""
         select *
         from {database}.events
