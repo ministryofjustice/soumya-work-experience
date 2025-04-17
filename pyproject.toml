@@ -13,4 +13,92 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=8.3.5",
+    "pytest-coverage>=0.0",
+    "ruff>=0.11.5",
 ]
+
+
+### Linting
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "ANN",    # flake8-annotations
+    "BLE",    # flake8-blind-except
+    "FBT",    # flake8-boolean-trap
+    "B",      # flake8-bugbear
+    "A",      # flake8-builtins
+    "COM",    # flake8-commas
+    "C4",     # flake8-comprehensions
+    "DTZ",    # fake8-datetimez
+    "T10",    # flake8-debugger
+    "EM",     # flake8-errmsg
+    "ISC",    # flake8-implicit-str-concat
+    "ICN",    # flake8-import-conventions
+    "LOG",    # flake8-logging
+    "G",      # flake8-logging-format
+    "INP001", # implicit-namespace-package
+    "T20",    # flake8-print
+    "PT",     # flake8-pytest-style
+    "Q",      # flake8-quotes
+    "RSE",    # flake8-raise
+    "RET",    # flake8-return
+    "SIM",    # flake8-simplify
+    "TID",    # flake8-tidy-imports
+    "TD",     # flake8-todos
+    "ARG",    # flake8-arguments
+    "PTH",    # flake8-use-pathlib
+    "I",      # isort
+    "N",      # pep8-naming
+    "E", "W", # pycodestyle
+    "D",      # pydocstyle
+    "F",      # pyflakes
+    "PL",     # pylint
+    "RUF",    # ruff
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+# D104 missing docstring in public package.
+# E501 line too long
+# F401 Checks for unused imports.
+"*" = [
+    "G004"
+]
+"*/__init__.py" = [
+   "D104",
+   "F401",
+]
+"tests/*" = [ 
+   "ANN",
+   "INP001",
+   "E501",
+   "D",
+]
+
+### Testing
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+
+[tool.coverage.report]
+fail_under = 0
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "__version__ = ",
+]
+# List any filepaths here to omit entirely from the final coverage test report.
+omit = [
+    "tests/*",  # Exclude all files in the tests directory
+]
+skip_empty = true
+show_missing = true
+
+[tool.coverage.html]
+show_contexts = true
