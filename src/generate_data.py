@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
         users = pd.DataFrame(get_users(start_id=i*10))
         users.to_json(
-            Path(__file__).parent / 'data' / f'users_{timestamp}.jsonl',
+            data_dir/ f'users_{timestamp}.jsonl',
             orient='records',
             lines=True,
         )
@@ -72,7 +72,7 @@ if __name__ == "__main__":
             )))
         
         pd.concat(events).to_json(
-            Path(__file__).parent / 'data' / f'events_{timestamp}.jsonl',
+            data_dir/ f'events_{timestamp}.jsonl',
             orient='records',
             lines=True,
         )
